@@ -11,9 +11,6 @@ import sys
 	
 class Solution(object):
 
-
-
-
 	def readUrlToImage(self,url):
 		#convert url to image
 		outputName = url[-36:]
@@ -56,29 +53,36 @@ class Solution(object):
 				major1,major2,major3 = key
 		return major1,major2,major3
 		
+	
+	def zoomOut(self,localImage):
+		basewidth = 100
+		img = Image.open(localImage)
+		wpercent = (basewidth/float(img.size[0]))
+		hsize = int((float(img.size[1])*float(wpercent)))
+		img = img.resize((basewidth,hsize), Image.ANTIALIAS)
+		return img
 		
 		
 		
 	
 	#find clean images objects' edges, and crop it
-	def findEdges(self,localImage):
+	def findEdges(self,zoomOutImage):
 		
-		leftX,leftY  = sys.maxsize,sys.maxsize
-		rightX,rightY = -sys.maxsize ,-sys.maxsize
-		topX,topY = sys.maxsize,sys.maxsize
-		bottomX,bottomY = -sys.maxsize,-sys.maxsize 
+		leftX  = sys.maxsize
+		rightX = -sys.maxsize 
+		topY = sys.maxsize
+		bottomY = -sys.maxsize 
 		
 		bgcol1,bgcol2,bgcol3 = self.leftTopAreaColor(localImage)
 			
-		img = Image.open(localImage)
+		img = zoomOutImage
+		#img = Image.open(localImage)
 		rgb_im = img.convert('RGB')
 		imageScale = img.size
 		
 		for i in range(0,imageScale[0]):
 			for j in range(0,imageScale[1]):
 				(r, g, b) = rgb_im.getpixel((i, j))
-				#if (r != bgcol1 and g != bgcol2) or (b != bgcol3 and r != bgcol1) or (b != bgcol3 and g != bgcol2):	
-
 				if r not in range(bgcol1-15,bgcol1+15)  and g not in range(bgcol2-15,bgcol2+15) and b not in range(bgcol3-15,bgcol3+15):
 					leftX = min(leftX,i)
 					#leftY = min(leftY,j)
@@ -88,39 +92,56 @@ class Solution(object):
 					topY = min(topY,j)
 					#bottomX = max(bottomX,i)
 					bottomY = max(bottomY,j)
-		print("leftX: %d",leftX)
-		print("topY: %d",topY)
-		print("rightX: %d",rightX)
-		print("bottomY: %d",bottomY)		
-		cropedImage = img.crop((leftX,topY,rightX,bottomY))
+#		print("leftX: %d",leftX)
+#		print("topY: %d",topY)
+#		print("rightX: %d",rightX)
+#		print("bottomY: %d",bottomY)		
+		croppedImage = img.crop((leftX,topY,rightX,bottomY))
 		path = '/Users/tangzekun/Desktop/Cropped/'+localImage[:-4]+'Cropped.jpg'
-		cropedImage.save(path,'JPEG')
-		#cropedImage.show()
-		return cropedImage		
+		croppedImage.save(path,'JPEG',quality = 95)
+		return path		
 		
-		
+
 	
-	
-	
-	
-	
-	
-#originalURL = "https://test.flaunt.peekabuy.com/api/board/get_jc_product_images_batch/?page=0"
-#response = urllib.request.urlopen(originalURL)
-#content = response.read()
-#data = json.loads(content.decode("utf8"))
-#
-#for clothingInfo in range(0,len(data["images"])):
-#	waitingEditing = readUrlToImage(clothingInfo[0])	
+	def zoomIn(self,croppedImage):
+		img = Image.open(croppedImage)
+		basewidth = 400
+		wpercent = (basewidth/float(img.size[0]))
+		hsize = int((float(img.size[1])*float(wpercent)))
+		img = img.resize((basewidth,hsize), Image.ANTIALIAS)
+		path = '/Users/tangzekun/Desktop/Cropped/'+localImage[:-4]+'Cropped.jpg'
+		img.save(path,'JPEG',quality = 95)
+		return img
 		
 	
-url = "https://peekabuy.s3.amazonaws.com/products/image/f435b4317bf4a5c7c13e249c9dca1571.jpg"
-test = Solution() 
-localImage = test.readUrlToImage(url)
-major1,major2,major3 = test.leftTopAreaColor(localImage)
-print(major1,major2,major3)
-print()	
-test.findEdges(localImage)
+	
+originalURL = "https://test.flaunt.peekabuy.com/api/board/get_jc_product_images_batch/?page=3"
+response = urllib.request.urlopen(originalURL)
+content = response.read()
+data = json.loads(content.decode("utf8"))
+for clothingInfo in range(0,len(data["images"])):
+	if data["images"][clothingInfo][2] == 2:
+		test = Solution() 
+		localImage = test.readUrlToImage(data["images"][clothingInfo][0])
+		zoomOutImage = test.zoomOut(localImage)
+		croppedImage = test.findEdges(zoomOutImage)
+		test.zoomIn(croppedImage)
+		
+	
+#url = "https://peekabuy.s3.amazonaws.com/products/image/7b8e4beb6b6591e4f69e02cb38235569.jpg"
+#url = "https://peekabuy.s3.amazonaws.com/products/image/8281cb2e07b34c2692249671de811508.jpg"
+#url = "https://peekabuy.s3.amazonaws.com/products/image/69993f3a85c113bece40344b33f9a3de.jpg"
+#url = "https://peekabuy.s3.amazonaws.com/products/image/ec71d52091c29b3f60241c42ea0f4d52.jpg"
+#url = "https://peekabuy.s3.amazonaws.com/products/image/e8304e33f415f09dfc8dd4c65c0e4a65.jpg"
+
+
+
+#test = Solution() 
+#localImage = test.readUrlToImage(url)
+#zoomOutImage = test.zoomOut(localImage)
+#major1,major2,major3 = test.leftTopAreaColor(localImage)	
+#croppedImage = test.findEdges(zoomOutImage)
+#test.zoomIn(croppedImage)
 	
 	
 	
