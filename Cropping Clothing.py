@@ -101,6 +101,158 @@ class Solution(object):
 		croppedImage.save(path,'JPEG',quality = 95)
 		return path		
 		
+		
+		
+		
+	def relateSample(self, croppedImage):
+		
+		model = Image.open(croppedImage)
+		scale = model.size
+		
+		left = 0
+		top = 0
+		right = 0
+		bottom = 0
+		
+		colorData = set()
+		
+		if scale[0] > 200 and scale[1]>200:
+			left = scale[0]/2-25
+			top = scale[1]/2-25
+			right = scale[0]/2+25
+			bottom = scale[1]/2+25
+			
+			left2 = scale[0]/2-25
+			top2 = scale[1]/2-100
+			right2 = scale[0]/2+25
+			bottom2 = scale[1]/2-50
+			
+			left3 = scale[0]/2-25
+			top3 = scale[1]/2+75
+			right3 = scale[0]/2+25
+			bottom3 = scale[1]/2+100
+			
+			'''
+			sample2 = model.crop((left2,top2,right2,bottom2))
+			sampleSize2 = sample2.size
+			rgb_sample2 = sample2.convert('RGB')
+			
+			for x in range(sampleSize2[0]):
+				for y in range(sampleSize2[1]):
+					(r,g,b) = rgb_sample2.getpixel((x, y))	
+					colorData.add((r,g,b))				
+					tempR = r
+					tempG = g
+					tempB = b
+					for t in range(10):
+						r += 1
+						colorData.add((r,g,b))
+					for z in range(10):
+						r = tempR
+						g += 1
+						colorData.add((r,g,b))
+					for k in range(10):
+						r = tempR
+						g = tempG
+						b += 1
+						colorData.add((r,g,b))
+			
+			
+			
+			sample3 = model.crop((left3,top3,right3,bottom3))
+			sampleSize3 = sample3.size
+			rgb_sample3 = sample3.convert('RGB')
+			
+			
+			for x in range(sampleSize3[0]):
+				for y in range(sampleSize3[1]):
+					(r,g,b) = rgb_sample3.getpixel((x, y))
+					colorData.add((r,g,b))
+					tempR = r
+					tempG = g
+					tempB = b
+					for t in range(10):
+						r += 1
+						colorData.add((r,g,b))
+					for z in range(10):
+						r = tempR
+						g += 1
+						colorData.add((r,g,b))
+					for k in range(10):
+						r = tempR
+						g = tempG
+						b += 1
+						colorData.add((r,g,b))
+		'''	
+			
+		else:
+			left = scale[0]/2-10
+			top = scale[1]/2-10
+			right = scale[0]/2+10
+			bottom = scale[1]/2+10
+			
+		sample = model.crop((left,top,right,bottom))
+		sampleSize = sample.size
+		rgb_sample = sample.convert('RGB')
+		
+		
+		for x in range(sampleSize[0]):
+			for y in range(sampleSize[1]):
+				(r,g,b) = rgb_sample.getpixel((x, y))
+				colorData.add((r,g,b))
+				tempR = r
+				tempG = g
+				tempB = b
+#				for t in range(10):
+#					r += 1
+#					colorData.add((r,g,b))
+#				for z in range(10):
+#					r = tempR
+#					g += 1
+#					colorData.add((r,g,b))
+#				for k in range(10):
+#					r = tempR
+#					g = tempG
+#					b += 1
+#					colorData.add((r,g,b))
+					
+		return colorData
+
+
+		
+	def detectRelation(self, croppedImage):
+		
+		model = Image.open(croppedImage)
+		rgb_im = model.convert('RGB')
+		scale = model.size
+		sampleColorInfo = self.relateSample(croppedImage)
+				
+		
+		leftX  = sys.maxsize
+		rightX = -sys.maxsize
+		topY = sys.maxsize
+		bottomY = -sys.maxsize
+		
+		
+		for i in range(0,scale[0]):
+			for j in range(0,scale[1]):
+				color = rgb_im.getpixel((i, j))
+				if color in sampleColorInfo:
+					
+					leftX = min(leftX,i)
+					rightX = max(rightX,i)
+					topY = min(topY,j)
+					bottomY = max(bottomY,j)
+
+		completely = model.crop((leftX,topY,rightX,bottomY))		
+		path = '/Users/tangzekun/Desktop/Cropped/'+localImage[:-4]+'Cropped.jpg'
+		completely.save(path,'JPEG')
+		return path
+		
+		
+		
+		
+		
 
 	
 	def zoomIn(self,croppedImage):
@@ -127,21 +279,15 @@ for clothingInfo in range(0,len(data["images"])):
 		croppedImage = test.findEdges(zoomOutImage)
 		test.zoomIn(croppedImage)
 		
-	
-#url = "https://peekabuy.s3.amazonaws.com/products/image/7b8e4beb6b6591e4f69e02cb38235569.jpg"
-#url = "https://peekabuy.s3.amazonaws.com/products/image/8281cb2e07b34c2692249671de811508.jpg"
-#url = "https://peekabuy.s3.amazonaws.com/products/image/69993f3a85c113bece40344b33f9a3de.jpg"
-#url = "https://peekabuy.s3.amazonaws.com/products/image/ec71d52091c29b3f60241c42ea0f4d52.jpg"
-#url = "https://peekabuy.s3.amazonaws.com/products/image/e8304e33f415f09dfc8dd4c65c0e4a65.jpg"
+	elif data["images"][clothingInfo][2] == 3:
+		test = Solution() 
+		localImage = test.readUrlToImage(data["images"][clothingInfo][0])
+		zoomOutImage = test.zoomOut(localImage)
+		croppedImage = test.findEdges(zoomOutImage)
+		deepCroppedImage = test.detectRelation(croppedImage)
+		test.zoomIn(deepCroppedImage)
+		
 
-
-
-#test = Solution() 
-#localImage = test.readUrlToImage(url)
-#zoomOutImage = test.zoomOut(localImage)
-#major1,major2,major3 = test.leftTopAreaColor(localImage)	
-#croppedImage = test.findEdges(zoomOutImage)
-#test.zoomIn(croppedImage)
 	
 	
 	
