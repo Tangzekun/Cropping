@@ -238,16 +238,10 @@ class Solution(object):
 					rightX = max(rightX,i)
 					topY = min(topY,j)
 					bottomY = max(bottomY,j)
-					
-		print("leftX: %d",leftX)
-		print("topY: %d",topY)
-		print("rightX: %d",rightX)
-		print("bottomY: %d",bottomY)
 
 		completely = model.crop((leftX,topY,rightX,bottomY))		
-		path = '/Users/tangzekun/Desktop/Cropped/'+localImage[:-4]+'CroppedCompletely.jpg'
+		path = '/Users/tangzekun/Desktop/Cropped/'+localImage[:-4]+'Cropped.jpg'
 		completely.save(path,'JPEG')
-		completely.show()
 		return path
 
 				
@@ -262,9 +256,9 @@ class Solution(object):
 #url = "https://peekabuy.s3.amazonaws.com/products/image/415af9b4ec984e929268c2c5288d9e4d.jpg"
 #url = "https://peekabuy.s3.amazonaws.com/products/image/f435b4317bf4a5c7c13e249c9dca1571.jpg"
 #url = "https://peekabuy.s3.amazonaws.com/products/image/e8304e33f415f09dfc8dd4c65c0e4a65.jpg"
-#url = "https://peekabuy.s3.amazonaws.com/products/image/5100ae9b5cb0e83efe089645dfc3c58c.jpg"
+url = "https://peekabuy.s3.amazonaws.com/products/image/5100ae9b5cb0e83efe089645dfc3c58c.jpg"
 #url = "https://peekabuy.s3.amazonaws.com/products/image/059e3eb786abfdab670db39d3ff53925.jpg"
-url = "https://peekabuy.s3.amazonaws.com/products/image/d9a4d815d68325aee748a82856017a50.jpg"
+#url = "https://peekabuy.s3.amazonaws.com/products/image/d9a4d815d68325aee748a82856017a50.jpg"
 
 
 
