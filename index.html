@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="description" content="Load image from storage">
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	<script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+	<img height="125" width="125"/>
+	<script>
+	var config =
+			{
+				apiKey: "AIzaSyCKtgPuXUUqoyiwEm5sU3Blqc-A9xtBFsI",
+				authDomain: "cropped-images.firebaseapp.com",
+				databaseURL: "https://cropped-images.firebaseio.com",
+				storageBucket: "cropped-images.appspot.com",
+			};
+
+	firebase.initializeApp(config);
+	var storage = firebase.storage();
+	var storageRef = storage.ref();
+	var tangRef = storageRef.child('images/Tang.png');
+
+	firebase.auth().signInAnonymously().then(function() 
+	{
+
+		tangRef.getDownloadURL().then(function(url)                             
+		{
+			document.querySelector('img').src = url;
+			
+		}).catch(function(error) 
+		{
+			console.error(error);
+		});
+	});
+	</script>
+	</body>
+</html>
