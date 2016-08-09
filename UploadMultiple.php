@@ -23,17 +23,11 @@
 			$file_tmp =$_FILES['files']['tmp_name'][$key];
 			$file_type=$_FILES['files']['type'][$key];
 			
+			$image= addslashes($_FILES['files']['tmp_name'][$key]);
+			$image= file_get_contents($image);
+			$image= base64_encode($image);
 			
-			$file_ext=explode('.',$_FILES['image']['name'][$key])	;
-			$file_ext=end($file_ext);  
-			$file_ext=strtolower(end(explode('.',$_FILES['image']['name'][$key])));  
-			if(in_array($file_ext,$extensions ) === false)
-			{
-				$errors[]="extension not allowed";
-			}
-			
-			
-			$query="Insert into Clothing (Picture_Name,Picture_Storage) values ( '$file_name','$file_type')";
+			$query="Insert into Clothing (Picture_Name,Picture_Storage) values ( '$file_name','$image')";
 			
 			$desired_dir="user_data";
 			if(empty($errors)==true)
