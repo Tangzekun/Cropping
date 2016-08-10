@@ -14,10 +14,10 @@ import base64
 class Solution(object):
 	
 	
-	db = mysql.connector.connect(user='hotel', password='hotel',
-	host='ix.cs.uoregon.edu',
-	port = 3366,
-	database ='Hotel_Data')
+	db = mysql.connector.connect(user='', password='',
+	host='',
+	port = ,
+	database ='')
 	
 	def readUrlToImage(self,url):
 		#convert url to image
