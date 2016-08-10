@@ -262,10 +262,10 @@ class Solution(object):
 #		return img
 		
 	
-db = mysql.connector.connect(user='hotel', password='hotel',
-host='ix.cs.uoregon.edu',
-port = 3366,
-database ='Hotel_Data')
+db = mysql.connector.connect(user='', password='',
+host='',
+port = ,
+database ='')
 
 originalURL = "https://style.peekabuy.com/api/board/get_jc_product_images_batch/?page=3"
 response = urllib.request.urlopen(originalURL)
